@@ -69,15 +69,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddSignalR();
 
-builder.Services.AddIdentityCore<SiteUser>(opt =>
-{
-  opt.Password.RequireNonAlphanumeric = false;
-})
-.AddRoles<Role>()
-.AddRoleManager<RoleManager<Role>>()
-.AddSignInManager<SignInManager<SiteUser>>()
-.AddEntityFrameworkStores<ApplicationDbContext>();
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var app = builder.Build();
 
@@ -94,22 +85,16 @@ app.UseCors(x => x.AllowAnyHeader()
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 // app.MapControllers();
 app.UseEndpoints(endpoints =>
 {
   endpoints.MapControllers();
   endpoints.MapHub<MessageHub>("hubs/message");
+  endpoints.MapFallbackToController("Index", "StaticWeb");
 });
-
-
-using (var scope = app.Services.CreateScope())
-{
-  var services = scope.ServiceProvider;
-  var context = services.GetRequiredService<ApplicationDbContext>();
-
-  context.Database.Migrate();
-}
 
 using (var scope = app.Services.CreateScope())
 {
