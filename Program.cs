@@ -81,7 +81,8 @@ app.UseRouting();
 app.UseCors(x => x.AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials()
-    .WithOrigins("http://localhost:3000"));
+    .WithOrigins("https://localhost:5001/", "https://vanapp.azurewebsites.net/")
+    );
 
 app.UseAuthentication();
 app.UseAuthorization();
