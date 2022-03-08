@@ -6,11 +6,18 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Server.Models
 {
-    public class SiteUser : IdentityUser<int>
-    {
-        public int Age { get; set; }
-        public string Gender { get; set; }   
-        public string City { get; set; }
-        public ICollection<UserRole> ?UserRoles {get; set;}
-    }
+  public class SiteUser : IdentityUser<int>
+  {
+    public int Age { get; set; }
+    public string Gender { get; set; }
+    public string City { get; set; }
+    public ICollection<UserRole>? UserRoles { get; set; }
+
+    public ICollection<Photo>? Photos { get; set; }
+
+    public ICollection<Message> MessagesSent { get; set; }
+
+    public ICollection<Message> MessagesReceived { get; set; }
+
+  }
 }
