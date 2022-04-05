@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-// using Server.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,11 @@ namespace Server.Controllers
     private readonly UserManager<SiteUser> _userManager;
     private readonly IConfiguration _config;
     private readonly SignInManager<SiteUser> _signInManager;
+    private readonly double bcitLatitude = 49.250947159526945;
+    private readonly double bcitLongitude = -123.0034739768768;
+
+    private readonly int MAXIMUM_DISTANCE_IN_KM = 50;
+
     public AccountApiController(UserManager<SiteUser> userManager, IConfiguration config, SignInManager<SiteUser> signInManager)
     {
       _config = config;
@@ -88,6 +94,53 @@ namespace Server.Controllers
       };
 
       return response;
+    }
+
+    [HttpGet("ip")]
+    public async Task<ActionResult<bool>> CheckAddress()
+    {
+
+      var httpClient = new HttpClient();
+      var ip_string = await httpClient.GetStringAsync("https://api64.ipify.org");
+
+      Console.WriteLine("your IP is: " + ip_string);
+
+      WebClient client = new WebClient();
+      string lookup_url = string.Format("http://ip-api.com/json/{0}", ip_string);
+
+
+      Console.WriteLine("lookup_url");
+      Console.WriteLine(lookup_url);
+      string json_geo = client.DownloadString(lookup_url);
+      Console.WriteLine(json_geo);
+
+      LocationType location = JsonSerializer.Deserialize<LocationType>(json_geo);
+
+      double meter_distance = GetDistance(bcitLongitude, bcitLatitude, location.lon, location.lat);
+
+      Console.WriteLine("longitude");
+      Console.WriteLine(location.lon);
+      Console.WriteLine("latitude");
+      Console.WriteLine(location.lat);
+      Console.WriteLine("meter_distance");
+      Console.WriteLine(meter_distance);
+      Console.WriteLine("distance from center");
+      Console.WriteLine(MAXIMUM_DISTANCE_IN_KM * 1000);
+
+      bool within_limit = meter_distance <= MAXIMUM_DISTANCE_IN_KM * 1000 ? true : false;
+
+      return Ok(within_limit);
+    }
+
+    private double GetDistance(double longitude, double latitude, double otherLongitude, double otherLatitude)
+    {
+      var d1 = latitude * (Math.PI / 180.0);
+      var num1 = longitude * (Math.PI / 180.0);
+      var d2 = otherLatitude * (Math.PI / 180.0);
+      var num2 = otherLongitude * (Math.PI / 180.0) - num1;
+      var d3 = Math.Pow(Math.Sin((d2 - d1) / 2.0), 2.0) + Math.Cos(d1) * Math.Cos(d2) * Math.Pow(Math.Sin(num2 / 2.0), 2.0);
+
+      return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
     }
 
     private async Task<string> GenerateJwt(SiteUser user)
