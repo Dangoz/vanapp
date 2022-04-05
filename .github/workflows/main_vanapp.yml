@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'vanapp'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B23C5318B9174D6AA2981D76384B9CDD }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BE7A41F1241948F596A9EAF4B7EF291F }}
           package: .
