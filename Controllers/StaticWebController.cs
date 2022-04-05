@@ -13,3 +13,4 @@ namespace Server.Controllers
       return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "index.html"), "text/HTML");
     }
   }
+}
