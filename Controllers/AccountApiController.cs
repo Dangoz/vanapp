@@ -99,9 +99,11 @@ namespace Server.Controllers
     [HttpGet("ip")]
     public async Task<ActionResult<bool>> CheckAddress()
     {
+      // get reqeust parameter
+      var ip_string = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
-      var httpClient = new HttpClient();
-      var ip_string = await httpClient.GetStringAsync("https://api64.ipify.org");
+      // var httpClient = new HttpClient();
+      // var ip_string = await httpClient.GetStringAsync("https://api64.ipify.org");
 
       Console.WriteLine("your IP is: " + ip_string);
 
