@@ -11,7 +11,7 @@ using Server.Data;
 namespace Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220308230927_M1")]
+    [Migration("20220405012949_M1")]
     partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
